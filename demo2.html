@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script charset="UTF-8" src="BannerSlider.js"></script>
+    <title>Title</title>
+</head>
+<body id="body" style="width: 500px ; height: 300px">
+
+</body>
+<script charset="UTF-8">
+    let slider = new Slider();
+    slider.opts = {
+        address: ["http://file1.wailian.work/2017/06/23/bgimg_1.jpg",
+            "http://file1.wailian.work/2017/06/23/bgimg_2.jpg",
+            "http://file1.wailian.work/2017/06/23/bgimg_3.jpg",
+            "http://file1.wailian.work/2017/06/23/bgimg_4.jpg"],
+        method: "leftSlide",    // 可选参数
+        containerId: 'body',    // 可选参数
+        duration: '1.5s', // 可选参数
+        delay: 2000     //  可选参数
+    };
+    slider.init();
+</script>
+</html>
