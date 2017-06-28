@@ -9,6 +9,12 @@
 
 </body>
 <script charset="UTF-8">
+    let callback = [];
+    for(let i = 0 ;i<4; i++){
+        callback[i] = function () {
+            open('http://www.evink.tk','_blank');
+        }
+    }
     let slider = new Slider();
     slider.opts = {
         address: ["http://file1.wailian.work/2017/06/23/bgimg_1.jpg",
@@ -19,7 +25,8 @@
         containerId: 'body',    // 可选参数
         duration: '1.5s', // 可选参数
         delay: 2000,     //  可选参数
-        hasLink: true
+        hasClick: true,
+        callback:callback
     };
     slider.init();
 </script>

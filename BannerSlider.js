@@ -16,11 +16,8 @@ function Slider() {
         indicatorStyle: 'dot',
         customIndicator: false,
         indicatorCodes: ['box-shadow:0 0 5px 2px red; opacity:0.8'],
-        hasLink: false,
-        links: ["http://www.evink.tk",
-            "http://www.evink.tk",
-            "http://www.evink.tk",
-            "http://www.evink.tk"]
+        hasClick: false,
+        callback: []
     };
     let timeoutBreak = -1;
     let isRecoveryHighlight = false;
@@ -31,11 +28,11 @@ function Slider() {
         }
         let address = this.opts.address;
         let containerId;
-        let hasLink;
-        let links;
+        let hasClick;
+        let callback;
         (this.opts.containerId === undefined) ? containerId = opts.containerId : containerId = this.opts.containerId;
-        (this.opts.hasLink === undefined) ? hasLink = opts.hasLink : hasLink = this.opts.hasLink;
-        (this.opts.links === undefined) ? links = opts.links : links = this.opts.links;
+        (this.opts.hasClick === undefined) ? hasClick = opts.hasClick : hasClick = this.opts.hasClick;
+        (this.opts.callback === undefined) ? callback = opts.callback : callback = this.opts.callback;
         // 创建图片元素
         let i = 0;
         let div = document.createElement('div');
@@ -53,8 +50,8 @@ function Slider() {
             sign.className = 'sign-cover';
             sign.id = 'sign-' + i;
             dotBox.appendChild(sign);
-            i++;
             events(sign, img, i);
+            i++;
         }
         div.appendChild(dotBox);
         let container = null;
@@ -113,9 +110,9 @@ function Slider() {
                 if (pic_hideHighlightId !== 0) document.getElementById(pic_hideHighlightId).className += ' hide';
             });
 
-            if (hasLink) {
+            if (hasClick) {
                 addEventListener(img, 'click', () => {
-                    open(links[i], '_blank');
+                    callback[i]();
                 });
             }
 
@@ -136,7 +133,7 @@ function Slider() {
 
         addStyle(style, '.div-cover', 'width:100%;height:100%;position:relative;overflow:hidden;');
         addStyle(style, '.img-cover', 'width:100%;height:100%;position:absolute;top:0;left:0;display:none;');
-        if (this.opts.hasLink === true) addStyle(style, '.img-cover', 'cursor:pointer;');
+        if (this.opts.hasClick === true) addStyle(style, '.img-cover', 'cursor:pointer;');
 
         const covers = ['width:100%;height:auto;position:absolute;bottom:5px;z-index:9;text-align:center;',
             'width:10px;height:10px;background:white;border-radius:5px;display:inline-block;margin:0 10px;opacity:0.5;',
