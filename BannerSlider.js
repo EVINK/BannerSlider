@@ -1,5 +1,6 @@
-/*
- Í¼Æ¬Ñ­»·¹¹ÔìÆ÷
+/**
+ *
+ * @constructor BannerSlider
  */
 
 function Slider() {
@@ -9,52 +10,183 @@ function Slider() {
             "http://file1.wailian.work/2017/06/23/bgimg_3.jpg",
             "http://file1.wailian.work/2017/06/23/bgimg_4.jpg"],
         method: "random",
-        containerId: 'null',
+        containerId: 'body',
         duration: '1s',
-        delay: 3000
+        delay: 3000,
+        indicatorStyle: 'dot',
+        customIndicator: false,
+        indicatorCodes: ['box-shadow:0 0 5px 2px red; opacity:0.8'],
+        hasLink: false,
+        links: ["http://www.evink.tk",
+            "http://www.evink.tk",
+            "http://www.evink.tk",
+            "http://www.evink.tk"]
     };
+    let timeoutBreak = -1;
+    let isRecoveryHighlight = false;
     Slider.prototype.opts = null;
     Slider.prototype.init = function () {
         if (this.opts === null) {
             this.opts = opts;
         }
         let address = this.opts.address;
-        let containerId = this.opts.containerId;
-        // ´´½¨Í¼Æ¬ÔªËØ
+        let containerId;
+        let hasLink;
+        let links;
+        (this.opts.containerId === undefined) ? containerId = opts.containerId : containerId = this.opts.containerId;
+        (this.opts.hasLink === undefined) ? hasLink = opts.hasLink : hasLink = this.opts.hasLink;
+        (this.opts.links === undefined) ? links = opts.links : links = this.opts.links;
+        // åˆ›å»ºå›¾ç‰‡å…ƒç´ 
         let i = 0;
         let div = document.createElement('div');
+        let dotBox = document.createElement('div');
         div.className = 'div-cover';
+        dotBox.className = 'box-cover';
         for (let key in address) {
             let img = document.createElement('img');
             img.className = 'img-cover';
             img.id = "img-cover" + i;
             img.src = address[key];
             div.appendChild(img);
+            // åˆ›å»ºå›¾ç‰‡æ ‡è¯†
+            let sign = document.createElement('div');
+            sign.className = 'sign-cover';
+            sign.id = 'sign-' + i;
+            dotBox.appendChild(sign);
             i++;
+            events(sign, img, i);
         }
+        div.appendChild(dotBox);
         let container = null;
-        if (containerId === 'null') {
+        if (containerId === 'body') {
             container = document.getElementsByTagName('body')[0];
         } else {
             container = document.getElementById(containerId);
         }
         container.appendChild(div);
         this.slide(div);
+
+        // ç½®æ¢å˜é‡ï¼Œ ä¸´æ—¶ç”¨ä»¥å­˜å‚¨çš„id  ï¼Œ æ”¾åœ¨å¾ªç¯ä½“å¤–éƒ¨
+        let signHighlightId = 0;    // é€šè¿‡è¿™ä¸ªå€¼åˆ¤æ–­æ˜¯å¦è¿›è¡Œäº†hoveræ“ä½œ
+        let picHighlightId = 0;
+        let pic_hideHighlightId = 0;
+
+        function events(sign, img, i) {
+            // äº‹ä»¶ç›‘å¬
+            addEventListener(sign, "hover", () => {
+                timeoutBreak = 0;
+                //ç§»é™¤signé«˜äº®
+                let signHighlight = div.getElementsByClassName('sign-cover sign-on')[0];
+                signHighlightId = signHighlight.id;
+                removeClass(signHighlight, ' sign-on');
+                //ç§»é™¤å›¾ç‰‡é«˜äº®
+                let picHighlight = div.getElementsByClassName('img-cover show')[0];
+                let picHighlight_hide = div.getElementsByClassName('img-cover hide');
+                picHighlightId = picHighlight.id;
+                removeClass(picHighlight, ' show');
+                for (let i = 0; i < picHighlight_hide.length; i++) {
+                    pic_hideHighlightId = picHighlight_hide[i].id;
+                    removeClass(picHighlight_hide[i], ' hide');
+                }
+                //ä¸ºå½“å‰signæ·»åŠ é«˜äº®
+                sign.className += ' sign-on';
+                // ä¸ºå½“å‰å›¾ç‰‡æ·»åŠ é«˜äº®
+                img.className += ' show';
+            });
+
+            addEventListener(div, 'mouseLeave', () => {
+                if (signHighlightId === 0) {
+                    // æœªæ›¾è¿›è¡Œhoveræ“ä½œ ï¼Œå°†ä»€ä¹ˆä¹Ÿä¸æ‰§è¡Œ
+                    return;
+                }
+                timeoutBreak = -1;
+                isRecoveryHighlight = !isRecoveryHighlight;
+                // å»æ‰å½“å‰é«˜äº®
+                removeClass(document.getElementsByClassName('sign-cover sign-on')[0], ' sign-on');
+                removeClass(document.getElementsByClassName('img-cover show')[0], ' show');
+                // è¿˜åŸäº‹ä»¶å‰çš„é«˜äº®
+                if (signHighlightId !== 0) {
+                    document.getElementById(signHighlightId).className += ' sign-on';
+                    signHighlightId = 0;
+                }
+                if (picHighlightId !== 0) document.getElementById(picHighlightId).className += ' show';
+                if (pic_hideHighlightId !== 0) document.getElementById(pic_hideHighlightId).className += ' hide';
+            });
+
+            if (hasLink) {
+                addEventListener(img, 'click', () => {
+                    open(links[i], '_blank');
+                });
+            }
+
+        }
+
     };
     Slider.prototype.slide = function (div) {
-        let methods = ['easy', 'leftSlide', 'rightSlide', 'upSlide', 'downSlide', 'expandX', 'roll'];
+        const methods = ['random', 'leftSlide', 'rightSlide', 'upSlide', 'downSlide', 'expandX', 'roll'];
         let method = this.opts.method;
         let duration = '1s';
         let delay = 3000;
         let head = document.getElementsByTagName('head')[0];
         let style = document.createElement(`style`);
         let images = div.getElementsByTagName('img');
+        let signs = div.getElementsByClassName('sign-cover');
         (!this.opts.duration) ? duration = '1s' : duration = this.opts.duration;
         (!this.opts.delay) ? delay = 3000 : delay = this.opts.delay;
-        addStyle(style, '.div-cover', 'width:100%;height:100%;position:relative;overflow:hidden;');
-        addStyle(style, '.img-cover', 'width:100%;height:100%;position:absolute;top:0;left:0;display:none');
 
-        if (method === 'random') {
+        addStyle(style, '.div-cover', 'width:100%;height:100%;position:relative;overflow:hidden;');
+        addStyle(style, '.img-cover', 'width:100%;height:100%;position:absolute;top:0;left:0;display:none;');
+        if (this.opts.hasLink === true) addStyle(style, '.img-cover', 'cursor:pointer;');
+
+        const covers = ['width:100%;height:auto;position:absolute;bottom:5px;z-index:9;text-align:center;',
+            'width:10px;height:10px;background:white;border-radius:5px;display:inline-block;margin:0 10px;opacity:0.5;',
+            'box-shadow:0 0 5px 2px lightblue; opacity:0.8;'];
+        if (this.opts.customIndicator === true) {
+            // è‡ªå®šä¹‰æŒ‡ç¤ºå™¨
+            let css;
+            ( this.opts.indicatorCodes === undefined ) ? css = opts.indicatorCodes : css = this.opts.indicatorCodes;
+            switch (css.length) {
+                case 2:
+                    addStyle(style, '.box-cover', covers[0]);
+                    addStyle(style, '.sign-cover', css[0]);
+                    addStyle(style, '.sign-on', css[1]);
+                    break;
+                case 3:
+                    addStyle(style, '.box-cover', css[0]);
+                    addStyle(style, '.sign-cover', css[1]);
+                    addStyle(style, '.sign-on', css[2]);
+                    break;
+                default:
+                    addStyle(style, '.box-cover', covers[0]);
+                    addStyle(style, '.sign-cover', covers[1]);
+                    addStyle(style, '.sign-on', css[0]);
+                    break;
+            }
+        } else {
+            switch (this.opts.indicatorStyle) {
+                case 'vertical':
+                    addStyle(style, '.box-cover', `${covers[0]}width: auto;right: 10px;bottom:50%;transform:translateY(50%);`);
+                    addStyle(style, '.sign-cover', `${covers[1]}display: block;margin: 10px 0;`);
+                    addStyle(style, '.sign-on', covers[2]);
+                    break;
+                case 'thumb':
+                    addStyle(style, '.box-cover', covers[0]);
+                    addStyle(style, '.sign-cover', `${covers[1]}width:80px;height:40px;border-radius:2px;`);
+                    addStyle(style, '.sign-on', `${covers[2]}opacity:1`);
+                    // æ·»åŠ signå°å›¾
+                    for (let i = 0; i < signs.length; i++) {
+                        addStyle(style, `#${signs[i].id}`, `background: URL(${this.opts.address[i]});background-size:100%;`);
+                    }
+                    break;
+                default:
+                    addStyle(style, '.box-cover', covers[0]);
+                    addStyle(style, '.sign-cover', covers[1]);
+                    addStyle(style, '.sign-on', covers[2]);
+                    break;
+            }
+        }
+
+        if (method === methods[0]) {
             method = methods[Math.round(Math.random() * (methods.length - 1))];
         }
 
@@ -77,7 +209,7 @@ function Slider() {
             addStyle(style, '@keyframes showUp', 'from{transform:rotate(60deg);}to{transform:rotate3D(0,0,0,0);}');
             addStyle(style, '@keyframes hideDown', 'from{transform:rotate3D(0,0,0,0);}to{transform:rotate(-120deg);}');
         } else {
-            // ÕâÀïÖ´ĞĞ easy-slide (¼´Ä¬ÈÏ·½·¨)
+            // è¿™é‡Œæ‰§è¡Œ easy-slide (å³é»˜è®¤æ–¹æ³•)
             addStyle(style, '@keyframes showUp', 'from{opacity:0;}to{opacity:1;}');
             addStyle(style, '@keyframes hideDown', 'from{opacity:1;}to{opacity:0;}');
         }
@@ -89,44 +221,86 @@ function Slider() {
         function circle() {
             for (let i = 0; i <= images.length; i++) {
                 setTimeout(() => {
-                    if (i === (images.length)) {
-                        // Çå³ı ×îºóÒ»ÕÅÍ¼Æ¬µÄ½øÈë¶¯»­ £¬ Ìí¼Ó ÍË³ö¶¯»­
-                        images[i - 1].className = images[i - 1].className.substring(0, images[i - 1].className.indexOf(' show'));
+                    // æ·»åŠ é«˜äº®,å¹¶ä¸”ä¿æŒä¸‹ä¸€æ¬¡å¾ªç¯æ­£å¸¸
+                    if (timeoutBreak !== -1) {   // -1 è¡¨ç¤º è‡ªå¾ªç¯
+                        if (i === images.length) circle();
+                        return;
+                    }
+
+                    if (isRecoveryHighlight) {    // å»é™¤è¢«è¿˜åŸçš„é«˜äº®
+                        isRecoveryHighlight = !isRecoveryHighlight;
+                        //ç§»é™¤signé«˜äº®
+                        let signHighlight = div.getElementsByClassName('sign-cover sign-on');
+                        for (let j = 0; j < signHighlight.length; j++)  removeClass(signHighlight[j], ' sign-on');
+                        //ç§»é™¤å›¾ç‰‡é«˜äº®
+                        let picHighlight = div.getElementsByClassName('img-cover show');
+                        let picHighlight_hide = div.getElementsByClassName('img-cover hide');
+                        for (let i = 0; i < picHighlight.length; i++)   removeClass(picHighlight[i], ' show');
+                        for (let i = 0; i < picHighlight_hide.length; i++)  removeClass(picHighlight_hide[i], ' hide');
+                    }
+
+                    if (i === images.length) {
+                        // æ¸…é™¤ æœ€åä¸€å¼ å›¾ç‰‡çš„è¿›å…¥åŠ¨ç”» ï¼Œ æ·»åŠ  é€€å‡ºåŠ¨ç”»
+                        removeClass(images[i - 1], ' show');
+                        removeClass(signs[i - 1], ' sign-on');
                         images[i - 1].className += ' hide';
                         circle();
                         return;
                     }
                     if (i === 0) {
-                        // È¥µô µ¹ÊıµÚ¶şÕÅÍ¼Æ¬µÄÍË³ö¶¯»­
-                        if (images[images.length - 2].className.indexOf(' hide') !== -1) {
-                            images[images.length - 2].className = images[images.length - 2].className.substring(0, images[images.length - 2].className.indexOf(' hide'));
-                        }
+                        // å»æ‰ å€’æ•°ç¬¬äºŒå¼ å›¾ç‰‡çš„é€€å‡ºåŠ¨ç”»
+                        removeClass(images[images.length - 2], ' hide');
                     }
                     if (i > 0) {
-                        // È¥µô µ¹ÊıµÚÒ»ÕÅÍ¼Æ¬µÄÍË³ö¶¯»­
-                        if (i === 1 && images[images.length - 1].className.indexOf(' hide') !== -1) {
-                            images[images.length - 1].className = images[images.length - 1].className.substring(0, images[images.length - 1].className.indexOf(' hide'));
-                        }
-                        // È¥µôÉÏ ÉÏÒ»¸±Í¼Æ¬µÄÍË³ö¶¯»­
-                        if (i > 1) {
-                            images[i - 2].className = images[i - 2].className.substring(0, images[i - 2].className.indexOf(' hide'));
-                        }
-                        // È¥µôÉÏÒ»¸±Í¼Æ¬µÄ½øÈë¶¯»­
-                        images[i - 1].className = images[i - 1].className.substring(0, images[i - 1].className.indexOf(' show'));
-                        //ÎªÉÏÒ»¸±Í¼Æ¬Ìí¼ÓÍË³ö¶¯»­ , ÏÈ Çå³ı ºó ²¹Èë
+                        // å»æ‰ å€’æ•°ç¬¬ä¸€å¼ å›¾ç‰‡çš„é€€å‡ºåŠ¨ç”»
+                        if (i === 1) removeClass(images[images.length - 1], ' hide');
+                        // å»æ‰ä¸Š ä¸Šä¸€å‰¯å›¾ç‰‡çš„é€€å‡ºåŠ¨ç”»
+                        if (i > 1) removeClass(images[i - 2], ' hide');
+                        // å»æ‰ä¸Šä¸€å‰¯å›¾ç‰‡çš„è¿›å…¥åŠ¨ç”»
+                        removeClass(images[i - 1], ' show');
+                        removeClass(signs[i - 1], ' sign-on');
+                        //ä¸ºä¸Šä¸€å‰¯å›¾ç‰‡æ·»åŠ é€€å‡ºåŠ¨ç”» , å…ˆ æ¸…é™¤ å è¡¥å…¥
                         images[i - 1].className += ' hide';
                     }
                     images[i].className += ' show';
+                    signs[i].className += ' sign-on';
 
-                    // Òì²½ĞİÃß 3000ºÁÃë £¬ÔÚ³ÌĞòĞÑÀ´µÄÊ±ºò£¬Ñ­»·ÄÚµÄ´úÂë»áÈ«²¿Ò»´ÎÖ´ĞĞ
-                    // Ê¹ÓÃi²ÎÊı£¬Ã¿´Î¸üĞÂiµÄÖµÊ±£¬»áÈÃÏÂÒ»´ÎÑ­»·¼ÌĞøĞİÃß
+                    // å¼‚æ­¥ä¼‘çœ  3000æ¯«ç§’ ï¼Œåœ¨ç¨‹åºé†’æ¥çš„æ—¶å€™ï¼Œå¾ªç¯å†…çš„ä»£ç ä¼šå…¨éƒ¨ä¸€æ¬¡æ‰§è¡Œ
+                    // ä½¿ç”¨iå‚æ•°ï¼Œæ¯æ¬¡æ›´æ–°içš„å€¼æ—¶ï¼Œä¼šè®©ä¸‹ä¸€æ¬¡å¾ªç¯ç»§ç»­ä¼‘çœ 
                 }, i * delay);
             }
         }
 
         circle();
-
     };
+}
+
+function removeClass(selector, className) {
+    if (selector.className.indexOf(className) !== -1)
+        selector.className = selector.className.substring(0, selector.className.indexOf(className));
+}
+
+
+function addEventListener(component, motivation, callback) {
+
+    if (motivation === 'hover') {
+        return component.onmouseover = () => {
+            return callback();
+        };
+    }
+
+    if (motivation === 'mouseLeave') {
+        return component.onmouseleave = () => {
+            return callback();
+        };
+    }
+
+    if (motivation === 'click') {
+        return component.onclick = () => {
+            return callback();
+        };
+    }
+
 }
 
 function addStyle(styleSheet, selector, cssCode) {
