@@ -2,20 +2,18 @@
 
 ### Step 1 导入文件到页面<br/>
 
-import BannerSlider.js to your page.<br/>
-
 ```javascript
 <script charset="UTF-8" src="BannerSlider.js"></script>
 ```
   
 ### Step 2 基础用法<br/>
 
-####Quickly Peeking / 快速预览.<br/>
+#### Quickly Peeking / 快速预览.<br/>
 
 ```javascript
 new Slider().init();
 ```
-####Basic Usage / 基础用法 .<br/>
+#### Basic Usage / 基础用法 .<br/>
 
 ```javascript
   let slider = new Slider();
@@ -61,7 +59,7 @@ new Slider().init();
 
 ### Step 3 自定义高亮指示和图片点击事件<br/> 
 
-####Advanced Usage.<br/>
+#### Advanced Usage.<br/>
 
 > customize highlight indicator / 自定义高亮指示.<br/>
 
