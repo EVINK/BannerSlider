@@ -23,11 +23,11 @@ new Slider().init();
             "http://file1.wailian.work/2017/06/23/bgimg_3.jpg",
             ...,
             "http://file1.wailian.work/2017/06/23/bgimg_N.jpg"],
-        method: 'leftSlide',    // 可选参数
+        method: 'leftSlide',     // 可选参数
         indicatorStyle: 'thumb', // 可选参数
-        containerId: 'body',    // 可选参数
-        duration: '1.5s', // 可选参数
-        delay: 2000     //  可选参数
+        containerId: 'body',     // 可选参数
+        duration: '1.5s',        // 可选参数
+        delay: 2000              // 可选参数
     };
     slider.init();
 ```
