@@ -43,7 +43,7 @@ new Slider().init();
     'roll',       // 60°翻转
     'random'      // 从以上的滑动方法随机选择一个
 ```
-> indicatorStyle parameters are listed here / 高亮指示参数在下面列出 .<br/>
+> indicatorStyle parameters are listed here / 高亮指示的参数在下面列出 .<br/>
 
 ```javascript
     'dot',       // 默认  小圆点
@@ -54,7 +54,7 @@ new Slider().init();
 > BannerSlider width/height depends on container`s width or heright.
 
 ```html
-<div id="containerId" style="width: 500px; height: 300px; "><div>
+<div id="containerId" style="width: 500px; height: 300px; "></div>
 ```
 
 ### Step 3 自定义高亮指示和图片点击事件<br/> 
