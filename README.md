@@ -1,3 +1,5 @@
+# 项目存在某些问题，等待更新
+
 # BannerSlider , an original javascript plugin for web designer
 
 ### Step 1 导入文件到页面<br/>
