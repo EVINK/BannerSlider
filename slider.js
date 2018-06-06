@@ -17,11 +17,22 @@ for(let i in divs){
         // 处理 postion位置
         for(let i in divs){
             if( "object" != typeof divs[i]) continue;
-            console.log(divs[i]);
+            // console.log(divs[i]);
             divs[i].style.left = `${(i) * 100 - 100}%`;
         }
         s();
     }, 1500);
+}()
+
+!function event(){
+    let divs = document.getElementsByTagName("footer")[0].getElementsByTagName("div");
+    console.log(divs);
+    for(let i = 0; i<divs.length;i++){
+        if( "object" != typeof divs[i]) continue;
+        divs[i].onmouseover = () => {
+
+        }
+    }
 }()
 
 
