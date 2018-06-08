@@ -1,3 +1,6 @@
 .vscode
 npm-debug.log
 package.json
+npm-debug.log
+package.json
+tsconfig.json

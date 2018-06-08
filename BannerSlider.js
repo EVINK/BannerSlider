@@ -1,9 +1,9 @@
 /**
  *
- * @constructor BannerSlider
+ * @constructor BannerBannserSlider
  */
 
-function Slider() {
+function BannserSlider() {
     let opts = {
         address: ["http://file1.wailian.work/2017/06/23/bgimg_1.jpg",
             "http://file1.wailian.work/2017/06/23/bgimg_2.jpg",
@@ -21,8 +21,8 @@ function Slider() {
     };
     let timeoutBreak = -1;
     let isRecoveryHighlight = false;
-    Slider.prototype.opts = null;
-    Slider.prototype.init = function () {
+    BannserSlider.prototype.opts = null;
+    BannserSlider.prototype.init = function () {
         if (this.opts === null) {
             this.opts = opts;
         }
@@ -119,7 +119,7 @@ function Slider() {
         }
 
     };
-    Slider.prototype.slide = function (div) {
+    BannserSlider.prototype.slide = function (div) {
         const methods = ['random', 'leftSlide', 'rightSlide', 'upSlide', 'downSlide', 'expandX', 'roll'];
         let method = this.opts.method;
         let duration = '1s';
@@ -141,7 +141,7 @@ function Slider() {
         if (this.opts.customIndicator === true) {
             // 自定义指示器
             let css;
-            ( this.opts.indicatorCodes === undefined ) ? css = opts.indicatorCodes : css = this.opts.indicatorCodes;
+            (this.opts.indicatorCodes === undefined) ? css = opts.indicatorCodes : css = this.opts.indicatorCodes;
             switch (css.length) {
                 case 2:
                     addStyle(style, '.box-cover', covers[0]);
