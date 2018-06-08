@@ -1,0 +1,9 @@
+{
+"name":"banner-slider",
+"author":"EvinK",
+"version":"0.0.1",
+"main":"slider",
+"scripts": {
+    "test": "tsc -w & live-server"
+}
+}
