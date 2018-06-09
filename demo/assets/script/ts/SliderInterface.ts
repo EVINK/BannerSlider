@@ -23,7 +23,7 @@ interface Options {
 
 interface ImgAttribute {
     containerId: string,
-    containerClasses: string,
+    containerClasses: Array<string>,
     id: string,
     classes: Array<string>,
     src: string,

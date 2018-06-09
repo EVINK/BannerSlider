@@ -8,24 +8,24 @@ function $(selector) {
     var firstChar = selector.substr(0, 1);
     var mainSelector = selector.substr(1);
     switch (firstChar) {
-        case "#":
+        case '#':
             // id
             element = document.getElementById(mainSelector);
             if (element == null)
-                throw new DOMException("no such a HTMLElement while id as " + mainSelector);
+                throw new DOMException('no such a HTMLElement while id as ' + mainSelector);
             break;
-        case ".":
+        case '.':
             // class
             element = document.getElementsByClassName(mainSelector);
             if (element == null || element.length <= 0) {
-                throw new DOMException("no such a HTMLCollectionOf Element while class as " + mainSelector);
+                throw new DOMException('no such a HTMLCollectionOf Element while class as ' + mainSelector);
             }
             break;
         default:
             // tag
             element = document.getElementsByTagName(selector);
             if (element == null || element.length <= 0) {
-                throw new DOMException("no such a NodeListOf Element while as " + selector);
+                throw new DOMException('no such a NodeListOf Element while as ' + selector);
             }
             break;
     }
@@ -40,11 +40,11 @@ var Slider = /** @class */ (function () {
     function Slider(options) {
         // 程序暴露给外部调用的默认配置
         this.options = {
-            address: ["http://ov998a2gm.bkt.clouddn.com/lib/pictures/content_1.jpg",
-                "http://ov998a2gm.bkt.clouddn.com/lib/pictures/content_2.jpg",
-                "http://ov998a2gm.bkt.clouddn.com/lib/pictures/bgimg_3.jpg",
-                "http://ov998a2gm.bkt.clouddn.com/lib/pictures/bgimg_4.jpg"],
-            method: "random",
+            address: ['http://ov998a2gm.bkt.clouddn.com/lib/pictures/content_1.jpg',
+                'http://ov998a2gm.bkt.clouddn.com/lib/pictures/content_2.jpg',
+                'http://ov998a2gm.bkt.clouddn.com/lib/pictures/bgimg_3.jpg',
+                'http://ov998a2gm.bkt.clouddn.com/lib/pictures/bgimg_4.jpg'],
+            method: 'random',
             containerId: 'body',
             duration: 1,
             delay: 3000,
@@ -59,7 +59,7 @@ var Slider = /** @class */ (function () {
         // 存放组件的样式
         this.styles = {
             // class
-            imgBox: "#slider-img-box {\n                    position: relative;\n                    width: inherit;\n                    height: inherit;\n                }",
+            imgBox: "#slider-img-box {\n                    position: relative;\n                    width: inherit;\n                    height: inherit;\n                    // overflow: hidden;\n                }",
             imgContainers: "#slider-img-box .slider-img-containers {\n                        position: absolute;\n                        top: 0;\n                        left: 0;\n                        width: inherit;\n                        height: inherit;\n                    }",
             imgs: "#slider-img-box .slider-img-containers .slider-img {\n                    width: inherit;\n                    height: inherit;\n                }",
         };
@@ -74,42 +74,42 @@ var Slider = /** @class */ (function () {
         var imgs;
         imgs = this.options.address;
         if (imgs === (null || undefined))
-            throw new DOMException("can`t get img elements, Slider.js init failure.");
+            throw new DOMException('can`t get img elements, Slider.js init failure.');
         else {
             var body = void 0;
-            if (this.options.containerId === "body")
-                body = $("body")[0];
+            if (this.options.containerId === 'body')
+                body = $('body')[0];
             else
-                body = $("#" + this.options.containerId);
-            var imgBox = document.createElement("div");
-            imgBox.id = "slider-img-box";
+                body = $('#' + this.options.containerId);
+            var imgBox = document.createElement('div');
+            imgBox.id = 'slider-img-box';
             var i = 1;
             for (var _i = 0, imgs_1 = imgs; _i < imgs_1.length; _i++) {
                 var value = imgs_1[_i];
                 this.generateImg({
-                    containerId: "slider-img-container" + i,
-                    containerClasses: "slider-img-containers",
+                    containerId: "slider-img-container-" + i,
+                    containerClasses: ["slider-img-containers"],
                     id: "slider-img-" + i,
-                    classes: ["slider-img"],
+                    classes: ['slider-img'],
                     src: value,
                     farther: imgBox
-                });
+                }, i - 1);
                 i++;
             }
             body.appendChild(imgBox);
         }
     };
     Slider.prototype.slide = function () {
-        console.log("a");
+        console.log('a');
     };
-    Slider.prototype.generateImg = function (attributes) {
-        var container = document.createElement("div");
+    Slider.prototype.generateImg = function (attributes, i) {
+        var container = document.createElement('div');
         container.id = attributes.containerId;
         for (var _i = 0, _a = (attributes.containerClasses); _i < _a.length; _i++) {
             var claz = _a[_i];
-            container.className += claz + "";
+            container.className += claz + " ";
         }
-        var img = document.createElement("img");
+        var img = document.createElement('img');
         img.id = attributes.id;
         for (var _b = 0, _c = (attributes.classes); _b < _c.length; _b++) {
             var claz = _c[_b];
@@ -118,16 +118,26 @@ var Slider = /** @class */ (function () {
         img.src = attributes.src;
         container.appendChild(img);
         attributes.farther.appendChild(container);
+        var displaceMent = i * 100;
+        var style = " #slider-img-box #" + container.id + " {\n                        left: " + displaceMent + "%;\n                    }";
+        this.appendToSheet(style);
     };
     Slider.prototype.generateStyleSheet = function () {
-        var parent = $("html")[0];
-        var body = $("body")[0];
-        var sheet = document.createElement("style");
-        sheet.id = "slider-sheet";
-        sheet.className = "slider-sheet";
+        var parent = $('html')[0];
+        var body = $('body')[0];
+        var sheet = document.createElement('style');
+        sheet.id = 'slider-sheet';
+        sheet.className = 'slider-sheet';
         parent.insertBefore(sheet, body);
         this.components.sheet = sheet;
+        this.appendToSheet(this.styles.imgBox);
+        this.appendToSheet(this.styles.imgContainers);
+        this.appendToSheet(this.styles.imgs);
         return sheet;
+    };
+    Slider.prototype.appendToSheet = function (style) {
+        this.components.sheet.innerHTML += style;
+        this.components.sheet.innerHTML += '\n';
     };
     return Slider;
 }());
