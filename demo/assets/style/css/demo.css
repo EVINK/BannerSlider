@@ -1,0 +1,20 @@
+body {
+  width: 800px;
+  height: 500px;
+}
+#slider-img-box {
+  position: relative;
+  width: inherit;
+  height: inherit;
+}
+#slider-img-box .slider-img-containers {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: inherit;
+  height: inherit;
+}
+#slider-img-box .slider-img-containers .slider-img {
+  width: inherit;
+  height: inherit;
+}

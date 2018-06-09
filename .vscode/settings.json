@@ -1,0 +1,5 @@
+{
+    "less.compile": {
+        "out": "${workspaceRoot}/demo/assets/style/css/"
+    }
+}
