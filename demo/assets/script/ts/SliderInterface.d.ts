@@ -32,4 +32,7 @@ interface ImgAttribute {
 
 interface Components {
     sheet: HTMLStyleElement,
+    imgBox: HTMLDivElement,
+    imgContainers: Array<HTMLDivElement>,
+    imgs: Array<HTMLImageElement>,
 }

@@ -2,3 +2,6 @@ body {
   width: 800px;
   height: 500px;
 }
+#slider-img-box {
+  overflow: hidden;
+}

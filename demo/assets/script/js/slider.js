@@ -1,28 +1,21 @@
 "use strict";
-/**
- * 仿造JQuery风格的查询器
- * @param selector
- */
 function $(selector) {
     var element;
     var firstChar = selector.substr(0, 1);
     var mainSelector = selector.substr(1);
     switch (firstChar) {
         case '#':
-            // id
             element = document.getElementById(mainSelector);
             if (element == null)
                 throw new DOMException('no such a HTMLElement while id as ' + mainSelector);
             break;
         case '.':
-            // class
             element = document.getElementsByClassName(mainSelector);
             if (element == null || element.length <= 0) {
                 throw new DOMException('no such a HTMLCollectionOf Element while class as ' + mainSelector);
             }
             break;
         default:
-            // tag
             element = document.getElementsByTagName(selector);
             if (element == null || element.length <= 0) {
                 throw new DOMException('no such a NodeListOf Element while as ' + selector);
@@ -31,14 +24,8 @@ function $(selector) {
     }
     return element;
 }
-/**
- * Slider主类
- * @constructor
- */
-var Slider = /** @class */ (function () {
-    // 构造函数
+var Slider = (function () {
     function Slider(options) {
-        // 程序暴露给外部调用的默认配置
         this.options = {
             address: ['http://ov998a2gm.bkt.clouddn.com/lib/pictures/content_1.jpg',
                 'http://ov998a2gm.bkt.clouddn.com/lib/pictures/content_2.jpg',
@@ -54,11 +41,8 @@ var Slider = /** @class */ (function () {
             hasClick: false,
             callback: []
         };
-        // 程序初始化时所创造的组件
         this.components = {};
-        // 存放组件的样式
         this.styles = {
-            // class
             imgBox: "#slider-img-box {\n                    position: relative;\n                    width: inherit;\n                    height: inherit;\n                    // overflow: hidden;\n                }",
             imgContainers: "#slider-img-box .slider-img-containers {\n                        position: absolute;\n                        top: 0;\n                        left: 0;\n                        width: inherit;\n                        height: inherit;\n                    }",
             imgs: "#slider-img-box .slider-img-containers .slider-img {\n                    width: inherit;\n                    height: inherit;\n                }",
@@ -66,41 +50,52 @@ var Slider = /** @class */ (function () {
         this.options = Object.assign(this.options, options);
         this.init();
     }
-    // 初始化
     Slider.prototype.init = function () {
-        // 创建sheet
         this.generateStyleSheet();
-        // 创建图片元素
         var imgs;
         imgs = this.options.address;
         if (imgs === (null || undefined))
             throw new DOMException('can`t get img elements, Slider.js init failure.');
-        else {
-            var body = void 0;
-            if (this.options.containerId === 'body')
-                body = $('body')[0];
-            else
-                body = $('#' + this.options.containerId);
-            var imgBox = document.createElement('div');
-            imgBox.id = 'slider-img-box';
-            var i = 1;
-            for (var _i = 0, imgs_1 = imgs; _i < imgs_1.length; _i++) {
-                var value = imgs_1[_i];
-                this.generateImg({
-                    containerId: "slider-img-container-" + i,
-                    containerClasses: ["slider-img-containers"],
-                    id: "slider-img-" + i,
-                    classes: ['slider-img'],
-                    src: value,
-                    farther: imgBox
-                }, i - 1);
-                i++;
-            }
-            body.appendChild(imgBox);
+        var body;
+        if (this.options.containerId === 'body')
+            body = $('body')[0];
+        else
+            body = $('#' + this.options.containerId);
+        var imgBox = document.createElement('div');
+        imgBox.id = 'slider-img-box';
+        var i = 1;
+        var imgContainers = new Array();
+        var imgElements = new Array();
+        for (var _i = 0, imgs_1 = imgs; _i < imgs_1.length; _i++) {
+            var value = imgs_1[_i];
+            var img = this.generateImg({
+                containerId: "slider-img-container-" + i,
+                containerClasses: ["slider-img-containers"],
+                id: "slider-img-" + i,
+                classes: ['slider-img'],
+                src: value,
+                farther: imgBox
+            }, i - 1);
+            i++;
+            imgContainers.push(img[0]);
+            imgElements.push(img[1]);
         }
+        body.appendChild(imgBox);
+        this.components.imgBox = imgBox;
+        this.components.imgContainers = imgContainers;
+        this.components.imgs = imgElements;
     };
     Slider.prototype.slide = function () {
-        console.log('a');
+        var _this = this;
+        setInterval(function () {
+            _this.containerSlideEvent();
+        }, 1000);
+    };
+    Slider.prototype.containerSlideEvent = function () {
+        var containers = this.components.imgContainers;
+        for (var _i = 0, containers_1 = containers; _i < containers_1.length; _i++) {
+            var container = containers_1[_i];
+        }
     };
     Slider.prototype.generateImg = function (attributes, i) {
         var container = document.createElement('div');
@@ -121,6 +116,7 @@ var Slider = /** @class */ (function () {
         var displaceMent = i * 100;
         var style = " #slider-img-box #" + container.id + " {\n                        left: " + displaceMent + "%;\n                    }";
         this.appendToSheet(style);
+        return [container, img];
     };
     Slider.prototype.generateStyleSheet = function () {
         var parent = $('html')[0];
@@ -141,6 +137,5 @@ var Slider = /** @class */ (function () {
     };
     return Slider;
 }());
-// @example
 var opts = {};
 var s = new Slider(opts);

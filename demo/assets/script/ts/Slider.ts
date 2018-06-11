@@ -1,36 +1,6 @@
+/// <reference path="utils.ts" />
 
-/**
- * 仿造JQuery风格的查询器
- * @param selector
- */
-function $(selector: string): any {
-    let element: any
-    let firstChar: string = selector.substr(0, 1);
-    let mainSelector: string = selector.substr(1);
-    switch (firstChar) {
-        case '#':
-            // id
-            element = document.getElementById(mainSelector);
-            if (element == null)
-                throw new DOMException('no such a HTMLElement while id as ' + mainSelector);
-            break;
-        case '.':
-            // class
-            element = document.getElementsByClassName(mainSelector);
-            if (element == null || element.length <= 0) {
-                throw new DOMException('no such a HTMLCollectionOf Element while class as ' + mainSelector);
-            }
-            break;
-        default:
-            // tag
-            element = document.getElementsByTagName(selector);
-            if (element == null || element.length <= 0) {
-                throw new DOMException('no such a NodeListOf Element while as ' + selector);
-            }
-            break;
-    }
-    return element;
-}
+// import { $ } from "./utils"; module = commonjs
 
 /**
  * Slider主类
@@ -89,7 +59,7 @@ class Slider {
         this.init();
     }
 
-    // 初始化
+    // 初始化图片组件
     init() {
 
         // 创建sheet
@@ -100,37 +70,60 @@ class Slider {
         imgs = this.options.address;
         if (imgs === (null || undefined))
             throw new DOMException('can`t get img elements, Slider.js init failure.');
-        else {
-            let body;
-            if (this.options.containerId === 'body')
-                body = $('body')[0];
-            else
-                body = $('#' + this.options.containerId as string);
-            let imgBox: HTMLElement = document.createElement('div');
-            imgBox.id = 'slider-img-box';
-            let i: number = 1;
-            for (let value of imgs) {
-                this.generateImg({
-                    containerId: `slider-img-container-${i}`,
-                    containerClasses: [`slider-img-containers`],
-                    id: `slider-img-${i}`,
-                    classes: ['slider-img'],
-                    src: value,
-                    farther: imgBox
-                }, i - 1);
-                i++;
-            }
-            body.appendChild(imgBox);
+
+        let body;
+        if (this.options.containerId === 'body')
+            body = $('body')[0];
+        else
+            body = $('#' + this.options.containerId as string);
+        let imgBox: HTMLDivElement = document.createElement('div');
+        imgBox.id = 'slider-img-box';
+        let i: number = 1;
+        let imgContainers: Array<HTMLDivElement> = new Array();
+        let imgElements: Array<HTMLImageElement> = new Array();
+        for (let value of imgs) {
+            let img = this.generateImg({
+                containerId: `slider-img-container-${i}`,
+                containerClasses: [`slider-img-containers`],
+                id: `slider-img-${i}`,
+                classes: ['slider-img'],
+                src: value,
+                farther: imgBox
+            }, i - 1);
+            i++;
+            imgContainers.push(img[0]);
+            imgElements.push(img[1]);
         }
+        body.appendChild(imgBox);
 
+        this.components.imgBox = imgBox;
+        this.components.imgContainers = imgContainers;
+        this.components.imgs = imgElements;
 
     }
 
+    // 核心逻辑:滑动
     slide() {
-        console.log('a');
+        setInterval(() => {
+            this.containerSlideEvent();
+        }, 1000);
     }
 
-    generateImg(attributes: ImgAttribute, i: number) {
+    containerSlideEvent() {
+        let containers = this.components.imgContainers;
+        for (let container of containers) {
+
+        }
+    }
+
+
+    /**
+     *
+     * @param attributes
+     * @param i
+     * @returns Array<HTMLDivElement, HTMLImgElement>
+     */
+    generateImg(attributes: ImgAttribute, i: number): Array<any> {
         let container: HTMLDivElement = document.createElement('div');
         container.id = attributes.containerId;
         for (let claz of (attributes.containerClasses)) {
@@ -149,6 +142,7 @@ class Slider {
                         left: ${displaceMent}%;
                     }`;
         this.appendToSheet(style);
+        return [container, img];
     }
 
     generateStyleSheet() {
