@@ -49,6 +49,7 @@ var Slider = (function () {
         };
         this.options = Object.assign(this.options, options);
         this.init();
+        this.slide();
     }
     Slider.prototype.init = function () {
         this.generateStyleSheet();
@@ -75,29 +76,36 @@ var Slider = (function () {
                 classes: ['slider-img'],
                 src: value,
                 farther: imgBox
-            }, i - 1);
+            }, i, imgs.length);
             i++;
             imgContainers.push(img[0]);
             imgElements.push(img[1]);
         }
+        this.components.startImg = imgElements[0];
+        this.components.startImgContainer = imgContainers[0];
+        for (var _a = 0, imgs_2 = imgs; _a < imgs_2.length; _a++) {
+            var value = imgs_2[_a];
+            var img = this.generateImg({
+                containerId: "slider-img-container-" + i,
+                containerClasses: ["slider-img-containers"],
+                id: "slider-img-" + i,
+                classes: ['slider-img'],
+                src: value,
+                farther: imgBox
+            }, i, imgs.length);
+            i++;
+            imgContainers.push(img[0]);
+            imgElements.push(img[1]);
+        }
+        this.components.endImg = imgElements[imgElements.length - 1];
+        this.components.endImgContainer = imgContainers[imgContainers.length - 1];
         body.appendChild(imgBox);
         this.components.imgBox = imgBox;
         this.components.imgContainers = imgContainers;
         this.components.imgs = imgElements;
     };
-    Slider.prototype.slide = function () {
-        var _this = this;
-        setInterval(function () {
-            _this.containerSlideEvent();
-        }, 1000);
-    };
-    Slider.prototype.containerSlideEvent = function () {
-        var containers = this.components.imgContainers;
-        for (var _i = 0, containers_1 = containers; _i < containers_1.length; _i++) {
-            var container = containers_1[_i];
-        }
-    };
-    Slider.prototype.generateImg = function (attributes, i) {
+    Slider.prototype.generateImg = function (attributes, i, imgsLength) {
+        var originalIndex = i;
         var container = document.createElement('div');
         container.id = attributes.containerId;
         for (var _i = 0, _a = (attributes.containerClasses); _i < _a.length; _i++) {
@@ -113,8 +121,19 @@ var Slider = (function () {
         img.src = attributes.src;
         container.appendChild(img);
         attributes.farther.appendChild(container);
-        var displaceMent = i * 100;
+        var displaceMent;
+        if (i >= imgsLength) {
+            i = i - imgsLength - 1;
+            displaceMent = i * 100;
+        }
+        else {
+            displaceMent = (imgsLength - i + 1) * -100;
+        }
         var style = " #slider-img-box #" + container.id + " {\n                        left: " + displaceMent + "%;\n                    }";
+        if (originalIndex != 1) {
+            var keyframe = " @keyframes slide-" + originalIndex + " {\n                0% {\n                    left: " + displaceMent + "%;\n                }\n                100% {\n                    left: " + (displaceMent - 100) + "%;\n                }\n            }";
+            this.appendToSheet(keyframe);
+        }
         this.appendToSheet(style);
         return [container, img];
     };
@@ -134,6 +153,27 @@ var Slider = (function () {
     Slider.prototype.appendToSheet = function (style) {
         this.components.sheet.innerHTML += style;
         this.components.sheet.innerHTML += '\n';
+    };
+    Slider.prototype.addInAnimations = function (originalIndex) {
+    };
+    Slider.prototype.addOutAnimations = function (originalIndex) {
+    };
+    Slider.prototype.slide = function () {
+        var _this = this;
+        setInterval(function () {
+            _this.containerSlideEvent();
+        }, 1000);
+    };
+    Slider.prototype.containerSlideEvent = function () {
+        var containers = this.components.imgContainers;
+        var imgLength = containers.length;
+        var i = 0;
+        for (var _i = 0, containers_1 = containers; _i < containers_1.length; _i++) {
+            var container = containers_1[_i];
+            var id = container.id;
+            this.appendToSheet("#" + id + "{\n                animation: slide-" + (i + 1) + " 1s;\n                animation-fill-mode: forwards;\n            }");
+            i++;
+        }
     };
     return Slider;
 }());

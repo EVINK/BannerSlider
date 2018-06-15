@@ -35,4 +35,8 @@ interface Components {
     imgBox: HTMLDivElement,
     imgContainers: Array<HTMLDivElement>,
     imgs: Array<HTMLImageElement>,
+    startImg: HTMLImageElement,
+    startImgContainer: HTMLDivElement,
+    endImg: HTMLImageElement,
+    endImgContainer: HTMLDivElement,
 }

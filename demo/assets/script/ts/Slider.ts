@@ -57,6 +57,7 @@ class Slider {
     constructor(options: Options) {
         this.options = Object.assign(this.options, options);
         this.init();
+        this.slide();
     }
 
     // 初始化图片组件
@@ -81,6 +82,7 @@ class Slider {
         let i: number = 1;
         let imgContainers: Array<HTMLDivElement> = new Array();
         let imgElements: Array<HTMLImageElement> = new Array();
+        // 生成第一遍
         for (let value of imgs) {
             let img = this.generateImg({
                 containerId: `slider-img-container-${i}`,
@@ -89,11 +91,33 @@ class Slider {
                 classes: ['slider-img'],
                 src: value,
                 farther: imgBox
-            }, i - 1);
+            }, i, imgs.length);
             i++;
             imgContainers.push(img[0]);
             imgElements.push(img[1]);
         }
+        // 记录起始图片
+        this.components.startImg = imgElements[0];
+        this.components.startImgContainer = imgContainers[0];
+
+        // 生成第二遍
+        for (let value of imgs) {
+            let img = this.generateImg({
+                containerId: `slider-img-container-${i}`,
+                containerClasses: [`slider-img-containers`],
+                id: `slider-img-${i}`,
+                classes: ['slider-img'],
+                src: value,
+                farther: imgBox
+            }, i, imgs.length);
+            i++;
+            imgContainers.push(img[0]);
+            imgElements.push(img[1]);
+        }
+        // 记录结尾图片
+        this.components.endImg = imgElements[imgElements.length - 1];
+        this.components.endImgContainer = imgContainers[imgContainers.length - 1];
+
         body.appendChild(imgBox);
 
         this.components.imgBox = imgBox;
@@ -102,28 +126,15 @@ class Slider {
 
     }
 
-    // 核心逻辑:滑动
-    slide() {
-        setInterval(() => {
-            this.containerSlideEvent();
-        }, 1000);
-    }
-
-    containerSlideEvent() {
-        let containers = this.components.imgContainers;
-        for (let container of containers) {
-
-        }
-    }
-
-
     /**
      *
      * @param attributes
      * @param i
+     * @param imgsLength
      * @returns Array<HTMLDivElement, HTMLImgElement>
      */
-    generateImg(attributes: ImgAttribute, i: number): Array<any> {
+    generateImg(attributes: ImgAttribute, i: number, imgsLength: number): Array<any> {
+        let originalIndex = i;
         let container: HTMLDivElement = document.createElement('div');
         container.id = attributes.containerId;
         for (let claz of (attributes.containerClasses)) {
@@ -137,11 +148,35 @@ class Slider {
         img.src = attributes.src;
         container.appendChild(img);
         attributes.farther.appendChild(container);
-        let displaceMent = i * 100;
+
+        // 位移
+        let displaceMent;
+        if (i >= imgsLength) {
+            i = i - imgsLength - 1;
+            displaceMent = i * 100;
+        } else {
+            displaceMent = (imgsLength - i + 1) * -100;
+        }
         let style = ` #slider-img-box #${container.id} {
                         left: ${displaceMent}%;
                     }`;
+
+        // 添加keyframe
+        if (originalIndex != 1) {
+            // i 为1时， 该元素会被动态的移除
+            let keyframe = ` @keyframes slide-${originalIndex} {
+                0% {
+                    left: ${displaceMent}%;
+                }
+                100% {
+                    left: ${displaceMent - 100}%;
+                }
+            }`;
+            this.appendToSheet(keyframe);
+        }
+
         this.appendToSheet(style);
+
         return [container, img];
     }
 
@@ -164,6 +199,41 @@ class Slider {
         this.components.sheet.innerHTML += '\n';
     }
 
+    // 添加进入动画
+    addInAnimations(originalIndex: number) {
+
+    }
+
+    // 添加退出动画
+    addOutAnimations(originalIndex: number) {
+
+    }
+
+    // 核心逻辑:滑动
+    // TODO： 此方法不应该耦合， 传入起始组件， 长度
+    slide() {
+        setInterval(() => {
+            this.containerSlideEvent();
+        }, 1000);
+    }
+
+    containerSlideEvent() {
+        let containers = this.components.imgContainers;
+        let imgLength = containers.length;
+        let i = 0;
+        for (let container of containers) {
+            let id = container.id;
+            this.appendToSheet(`#${id}{
+                animation: slide-${i + 1} 1s;
+                animation-fill-mode: forwards;
+            }`);
+
+            i++;
+        }
+
+    }
+
+
 }
 
 
@@ -171,6 +241,4 @@ class Slider {
 let opts = {
 };
 let s = new Slider(opts);
-
-
 
