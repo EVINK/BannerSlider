@@ -3,5 +3,5 @@ body {
   height: 500px;
 }
 #slider-img-box {
-  overflow: hidden;
+  /* overflow: hidden; */
 }
